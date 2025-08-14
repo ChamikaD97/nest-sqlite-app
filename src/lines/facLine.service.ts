@@ -9,13 +9,17 @@ export class FacLineService {
   constructor(
     @InjectRepository(FacLine)
     private readonly facLineRepository: Repository<FacLine>,
-  ) {}
-async removeByCodeAndId(lineCode: string, lineId: string): Promise<void> {
-  const result = await this.facLineRepository.delete({ lineCode, lineId });
-  if (result.affected === 0) {
-    throw new NotFoundException(`Line with code ${lineCode} and ID ${lineId} not found`);
+  ) { }
+
+
+
+  
+  async removeByCodeAndId(lineCode: string, lineId: string): Promise<void> {
+    const result = await this.facLineRepository.delete({ lineCode, lineId });
+    if (result.affected === 0) {
+      throw new NotFoundException(`Line with code ${lineCode} and ID ${lineId} not found`);
+    }
   }
-}
 
   create(createFacLineDto: CreateFacLineDto): Promise<FacLine> {
     const facLine = this.facLineRepository.create(createFacLineDto);
@@ -34,14 +38,19 @@ async removeByCodeAndId(lineCode: string, lineId: string): Promise<void> {
   }
 
   // line.service.ts
-async updateByCompositeKey(lineCode: string, lineId: string, updateLineDto: UpdateFacLineDto) {
-  const line = await this.facLineRepository.findOne({ where: { lineCode, lineId } });
-  if (!line) {
-    throw new NotFoundException(`Line with code ${lineCode} and ID ${lineId} not found`);
+  async updateByCompositeKey(lineCode: string, lineId: string, updateLineDto: UpdateFacLineDto) {
+    const line = await this.facLineRepository.findOne({ where: { lineCode, lineId } });
+    if (!line) {
+      throw new NotFoundException(`Line with code ${lineCode} and ID ${lineId} not found`);
+    }
+
+    Object.assign(line, updateLineDto);
+    return this.facLineRepository.save(line);
   }
-
-  Object.assign(line, updateLineDto);
-  return this.facLineRepository.save(line);
-}
-
+  async removeAll(): Promise<void> {
+    const result = await this.facLineRepository.deleteAll();
+    if (result.affected === 0) {
+      throw new NotFoundException(`All lines could not be removed`);
+    }
+  }
 }

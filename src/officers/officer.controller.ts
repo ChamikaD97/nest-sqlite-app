@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Param, Delete, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Delete, Body, Put } from '@nestjs/common';
 import { OfficerService } from './officer.service';
-import { CreateOfficerDto } from './create-officer.dto';
+import { CreateOfficerDto, UpdateOfficerDto } from './create-officer.dto';
 
 @Controller('officers')
 export class OfficerController {
-  constructor(private readonly officerService: OfficerService) {}
+  constructor(private readonly officerService: OfficerService) { }
 
   @Get()
   getAll() {
@@ -23,6 +23,19 @@ export class OfficerController {
 
   @Delete(':id')
   delete(@Param('id') id: number) {
+    console.log(`Deleting officer with ID: ${id}`);
+
     return this.officerService.remove(id);
   }
+
+
+  @Put(':id')
+  async update(
+
+    @Param('id') id: number,
+    @Body() updateOfficerDto: UpdateOfficerDto,
+  ) {
+    return this.officerService.updateOfficer(id, updateOfficerDto);
+  }
+
 }
