@@ -24,8 +24,10 @@ export class OfficerService {
   create(createOfficerDto: CreateOfficerDto): Promise<Officer> {
     const officer = this.officerRepository.create(createOfficerDto);
     console.log(`Creating officer with name: ${officer.name}, NIC: ${officer.nic}, Joined Date: ${officer.joinedDate}`);
-    
-    if (!officer.name.startsWith('Mr.')) {
+    if (officer.name.includes('Other')) { 
+      return this.officerRepository.save(officer);
+    }
+    else if (!officer.name.startsWith('Mr.')) {
       officer.name = `Mr. ${officer.name}`;
       return this.officerRepository.save(officer);
     } else {
@@ -41,7 +43,7 @@ export class OfficerService {
 
   async updateOfficer(id: number, updateOfficerDto: UpdateOfficerDto): Promise<Officer> {
     console.log(`Updating officer with ID: ${id}, Name: ${updateOfficerDto.name}, NIC: ${updateOfficerDto.nic}, Joined Date: ${updateOfficerDto.joinedDate}`);
-    
+
     const officer = await this.officerRepository.findOne({ where: { id } });
     await this.officerRepository.delete(id);
 
